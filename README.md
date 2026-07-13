@@ -1,20 +1,31 @@
 # tesla-fleet-key
 
-Public hosting for a **Tesla Fleet API third-party developer public key**.
+Public hosting for a **Tesla Fleet API third-party developer app** — the
+registered domain is **`srp.kuju.email`** (Allowed Origin + Redirect URI in the
+Tesla developer portal). Served via **GitHub Pages**.
 
-Tesla requires third-party apps to publish their EC public key at a fixed
-well-known path over public HTTPS so Tesla can register the app for *signed*
-vehicle commands. This repo serves exactly that one file via **GitHub Pages**:
+## What it serves
 
-```
-https://srp.kuju.email/.well-known/appspecific/com.tesla.3p.public-key.pem
-```
+- `.well-known/appspecific/com.tesla.3p.public-key.pem` — the app's **public**
+  key, fetched by Tesla to register the app for *signed* vehicle commands. Safe
+  to publish; the private signing key is NOT here.
+  → `https://srp.kuju.email/.well-known/appspecific/com.tesla.3p.public-key.pem`
+- `access.html` — the OAuth **redirect/callback** page, served at `/access`.
+  After you authorize the app, Tesla sends the browser here with `?code=…`;
+  this **client-side** page reads the code (and `state`) out of the URL and
+  shows it for copy-paste, with an error view if Tesla returns `?error=`. It
+  holds **no secrets** and transmits nothing — exchange the code for tokens
+  yourself from a trusted environment using your client secret.
+  → `https://srp.kuju.email/access`
 
-## How it works
+## Plumbing
 
-- `.well-known/appspecific/com.tesla.3p.public-key.pem` — the **public** key (safe to publish; the private signing key is NOT here).
-- `.nojekyll` — **required.** GitHub Pages runs Jekyll by default, which excludes any path starting with `.` (like `.well-known`). This empty file disables Jekyll so the dotfolder publishes verbatim.
-- `CNAME` — binds the custom domain `srp.kuju.email` (a subdomain CNAME'd to `macole16.github.io`, DNS-only on Cloudflare).
+- `.nojekyll` — **required.** GitHub Pages runs Jekyll by default, which excludes
+  any path starting with `.` (like `.well-known`). This empty file disables
+  Jekyll so the dotfolder publishes verbatim.
+- `CNAME` — binds the custom domain `srp.kuju.email` (a subdomain CNAME'd to
+  `macole16.github.io`, DNS-only / unproxied on Cloudflare — Tesla requires a
+  reachable, non-proxied HTTPS origin).
 
 ## History
 
